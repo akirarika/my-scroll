@@ -1,6 +1,6 @@
 {
-  "name": "@better-scroll/infinity",
-  "version": "2.5.1",
+  "name": "@aurora-design/my-scroll-infinity",
+  "version": "0.0.0",
   "description": "The ability to inject a infinity load for BetterScroll.",
   "author": "fengweiyao <fengweiyao0317@hotmail.com>",
   "main": "dist/infinity.min.js",
