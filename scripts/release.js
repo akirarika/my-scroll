@@ -16,18 +16,18 @@ const release = async () => {
   })
   const bumpChoices = bumps.map(b => ({ name: `${b} (${versions[b]})`, value: b }))
 
-  function getVersion (answers) {
+  function getVersion(answers) {
     return answers.customVersion || versions[answers.bump]
   }
 
-  function getNpmTags (version) {
+  function getNpmTags(version) {
     if (isPreRelease(version)) {
       return ['next']
     }
     return ['latest', 'next']
   }
 
-  function isPreRelease (version) {
+  function isPreRelease(version) {
     return !!semver.prerelease(version)
   }
 
@@ -85,17 +85,17 @@ const release = async () => {
   // it seems that sometimes 'gitHead' property in packages/**/package.json will change
   // but sometimes it won't, at this condition. work tree is clean, 'git commit ' will cause en error
   // so put it in try/catch, because we want to sync dev from master
-  try {
-    await execa('git', ['add', '-A'], { stdio: 'inherit' })
-    await execa('git', ['commit', '-m', `chore: ${version} published`], { stdio: 'inherit' })
-    await execa('git', ['push', 'origin', `master`], { stdio: 'inherit' })
-  } catch (error) {}
+  // try {
+  //   await execa('git', ['add', '-A'], { stdio: 'inherit' })
+  //   await execa('git', ['commit', '-m', `chore: ${version} published`], { stdio: 'inherit' })
+  //   await execa('git', ['push', 'origin', `master`], { stdio: 'inherit' })
+  // } catch (error) {}
 
-  // sync dev from master
-  await execa('git', ['checkout', 'dev'], { stdio: 'inherit' })
-  await execa('git', ['rebase', 'master'], { stdio: 'inherit' })
-  await execa('git', ['push', 'origin', 'dev'], { stdio: 'inherit' })
-  await execa('git', ['checkout', 'master'], { stdio: 'inherit' })
+  // // sync dev from master
+  // await execa('git', ['checkout', 'dev'], { stdio: 'inherit' })
+  // await execa('git', ['rebase', 'master'], { stdio: 'inherit' })
+  // await execa('git', ['push', 'origin', 'dev'], { stdio: 'inherit' })
+  // await execa('git', ['checkout', 'master'], { stdio: 'inherit' })
 }
 
 release().catch(err => {
