@@ -121,6 +121,13 @@ export default class MouseWheel {
     if (!this.scroll.enabled) {
       return
     }
+
+    // 拦截 mac 触控板，每次滚动的距离不一致，则说明是触控板
+    if (!this.wheelDelta) {
+      this.wheelDelta = e.wheelDelta
+      setTimeout(() => (this.wheelDelta = undefined), 1000)
+    }
+
     this.beforeHandler(e)
 
     // start
@@ -131,7 +138,7 @@ export default class MouseWheel {
 
     // move
     const delta = this.getWheelDelta(e)
-    this.wheelMoveHandler(delta)
+    this.wheelMoveHandler(delta, e)
 
     // end
     this.wheelEndDetector(delta)
@@ -154,12 +161,15 @@ export default class MouseWheel {
     this.deltaCache = []
   }
 
-  private wheelMoveHandler(delta: {
-    x: number
-    y: number
-    directionX: number
-    directionY: number
-  }) {
+  private wheelMoveHandler(
+    delta: {
+      x: number
+      y: number
+      directionX: number
+      directionY: number
+    },
+    e: CompatibleWheelEvent
+  ) {
     const { throttleTime, dampingFactor } = this.mouseWheelOpt
     if (throttleTime && this.wheelMoveTimer) {
       this.deltaCache.push(delta)
@@ -201,7 +211,18 @@ export default class MouseWheel {
       ) {
         const easeTime = this.getEaseTime()
         if (newX !== this.scroll.x || newY !== this.scroll.y) {
-          this.scroll.scrollTo(newX, newY, easeTime)
+          if (e.wheelDelta !== this.wheelDelta) {
+            // if ((this.scroll.y > this.scroll.maxScrollY && this.scroll.y < this.scroll.minScrollY) || (this.scroll.x > this.scroll.maxScrollX && this.scroll.x < this.scroll.minScrollX)) {
+            this.scroll.scrollBy(
+              this.scroll.options.scrollX ? e.wheelDeltaX * 0.12 : 0,
+              this.scroll.options.scrollY ? e.wheelDeltaY * 0.12 : 0,
+              0
+            )
+            // this.scroll.stop();
+            // }
+          } else {
+            this.scroll.scrollTo(newX, newY, easeTime)
+          }
         }
       }
       if (throttleTime) {

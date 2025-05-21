@@ -13,19 +13,19 @@ const spinner = ora({
   prefixText: `${chalk.green('\n[building tasks]')}`
 })
 
-function getPackagesName () {
+function getPackagesName() {
   let ret
   let all = fs.readdirSync(resolve('packages'))
   // drop hidden file whose name is startWidth '.'
   // drop packages which would not be published(eg: examples and docs)
   ret = all
-        .filter(name => {
-          const isHiddenFile = /^\./g.test(name)
-          return !isHiddenFile
-        }).filter(name => {
-          const isPrivatePackages = require(resolve(`packages/${name}/package.json`)).private
-          return !isPrivatePackages
-        })
+    .filter(name => {
+      const isHiddenFile = /^\./g.test(name)
+      return !isHiddenFile
+    }).filter(name => {
+      const isPrivatePackages = require(resolve(`packages/${name}/package.json`)).private
+      return !isPrivatePackages
+    })
 
   return ret
 }
@@ -48,21 +48,21 @@ function resolve(p) {
   return path.resolve(__dirname, '../', p)
 }
 
-function PascalCase(str){
-  const re=/-(\w)/g;
-  const newStr = str.replace(re, function (match, group1){
-      return group1.toUpperCase();
+function PascalCase(str) {
+  const re = /-(\w)/g;
+  const newStr = str.replace(re, function (match, group1) {
+    return group1.toUpperCase();
   })
   return newStr.charAt(0).toUpperCase() + newStr.slice(1);
 }
 
 const generateBanner = (packageName) => {
   let ret =
-  '/*!\n' +
-  ' * better-scroll / ' + packageName + '\n' +
-  ' * (c) 2016-' + new Date().getFullYear() + ' ustbhuangyi\n' +
-  ' * Released under the MIT License.\n' +
-  ' */'
+    '/*!\n' +
+    ' * better-scroll / ' + packageName + '\n' +
+    ' * (c) 2016-' + new Date().getFullYear() + ' ustbhuangyi\n' +
+    ' * Released under the MIT License.\n' +
+    ' */'
   return ret
 }
 
@@ -95,7 +95,7 @@ function generateBuildConfigs(packagesName) {
           format: type.format,
           banner: generateBanner(name)
         },
-        plugins: generateBuildPluginsConfigs(type.ext.indexOf('min')>-1, name)
+        plugins: generateBuildPluginsConfigs(type.ext.indexOf('min') > -1, name)
       }
       // rename
       if (name === 'core' && config.output.format !== 'es') {
@@ -104,7 +104,7 @@ function generateBuildConfigs(packagesName) {
         config.output.exports = 'named'
         // it seems the umd bundle can not satisfies our demand
         config.output.footer = 'if(typeof window !== "undefined" && window.BScroll) { \n' +
-                              '  window.BScroll = window.BScroll.default;\n}'
+          '  window.BScroll = window.BScroll.default;\n}'
       }
       // rollup will valiate config properties of config own and output a warning.
       // put packageName in prototype to ignore warning.
@@ -127,9 +127,9 @@ function generateBuildPluginsConfigs(isMin) {
     tsconfig: path.resolve(__dirname, '../tsconfig.json'),
   }
   const plugins = []
-    if (isMin) {
-      plugins.push(uglify())
-    }
+  if (isMin) {
+    plugins.push(uglify())
+  }
   plugins.push(typescript(tsConfig))
   return plugins
 }
@@ -139,7 +139,7 @@ function build(builds) {
   const total = builds.length
   const next = () => {
     buildEntry(builds[built], built + 1, () => {
-      builds[built-1] = null
+      builds[built - 1] = null
       built++
       if (built < total) {
         next()
@@ -167,7 +167,7 @@ function buildEntry(config, curIndex, next) {
       if (isProd) {
         zlib.gzip(code, (err, zipped) => {
           if (err) return reject(err)
-          let words =  `(gzipped: ${chalk.magenta(getSize(zipped))})`
+          let words = `(gzipped: ${chalk.magenta(getSize(zipped))})`
           report(words)
         })
       } else {
@@ -186,11 +186,11 @@ function buildEntry(config, curIndex, next) {
   })
 }
 
-function copyDTSFiles (packageName) {
+function copyDTSFiles(packageName) {
   console.log(chalk.cyan('> start copying .d.ts file to dist dir of packages own.'))
   const sourceDir = resolve(`packages/${packageName}/dist/packages/${packageName}/src/*`)
   const targetDir = resolve(`packages/${packageName}/dist/types/`)
-  execa.commandSync(`mv ${sourceDir} ${targetDir}`, { shell: true })
+  execa.commandSync(`powershell.exe -command "mv ${sourceDir} ${targetDir}"`, { shell: true })
   console.log(chalk.cyan('> copy job is done.'))
   rimraf.sync(resolve(`packages/${packageName}/dist/packages`))
   rimraf.sync(resolve(`packages/${packageName}/dist/node_modules`))
